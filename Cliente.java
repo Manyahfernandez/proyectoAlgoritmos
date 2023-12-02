@@ -11,6 +11,7 @@ public class Cliente{
 			j = 0;
 			i++;
 		}
+		LineasRectangulosColores.obtenerProximosObjetos();
 		LineasRectangulosColores.mostrarEstadoDelJuego();
 	}
 }
