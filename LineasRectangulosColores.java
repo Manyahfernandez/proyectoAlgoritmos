@@ -149,10 +149,26 @@ public class LineasRectangulosColores{
 		mt.dibujarLinea(9*longitud/8,longitudPedazo,9*longitud/8 + longitudPedazo,longitudPedazo);
 		mt.dibujarLinea(9*longitud/8, 2*longitudPedazo,9*longitud/8 + longitudPedazo, 2*longitudPedazo);
 		mt.configurarFuente("SansSerif", Font.PLAIN + Font.BOLD, 16);
-		mt.dibujarString("Proximos", 9*longitud/8, 3*longitudPedazo + longitudPedazo/2, Colores.BLACK);
-		mt.dibujarString("Elementos", 9*longitud/8, 3*longitudPedazo + longitudPedazo/2 + 16, Colores.BLACK);
+		mt.dibujarString("Proximos", 9*longitud/8, 7*longitudPedazo/2, Colores.BLACK);
+		mt.dibujarString("Elementos", 9*longitud/8, 7*longitudPedazo/2 + 16, Colores.BLACK);
 		mt.configurarFuente("SansSerif", Font.BOLD, 20);
-		mt.dibujarString("Puntaje:" + puntaje,0, longitud + longitudPedazo/2, Colores.BLACK);
+		mt.dibujarString("Puntaje:" + puntaje,0, longitud + 20 + longitudPedazo, Colores.BLACK);
+		mt.configurarFuente("SansSerif", Font.PLAIN, 14);
+
+		i = 0;
+
+		while(i < 9){
+			mt.dibujarString(""+i,longitud + 14, longitudPedazo/2 + i*longitudPedazo + 7, Colores.BLACK);
+			i++;
+		}
+
+		i = 0;
+
+		while(i < 9){
+			mt.dibujarString(""+i,longitudPedazo/2 + i*longitudPedazo - 7,longitud + 20,Colores.BLACK);
+			i++;
+		}
+
 		mt.mostrar();
 	}
 
@@ -292,6 +308,8 @@ public class LineasRectangulosColores{
 		mt.dibujarRectangulo(9*longitud/8, 0, longitudPedazo,3*longitudPedazo);	
 		mt.dibujarLinea(9*longitud/8,longitudPedazo,9*longitud/8 + longitudPedazo,longitudPedazo);
 		mt.dibujarLinea(9*longitud/8, 2*longitudPedazo,9*longitud/8 + longitudPedazo, 2*longitudPedazo);
+		mt.configurarFuente("SansSerif", Font.BOLD, 20);
+		mt.dibujarString("Puntaje:" + puntaje,0, longitud + 20 + longitudPedazo, Colores.BLACK);
 		mt.repintar();
 	}
 
