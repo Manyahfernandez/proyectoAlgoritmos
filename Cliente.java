@@ -1,5 +1,6 @@
 public class Cliente{
 	public static void main(String[] args){
+		LineasRectangulosColores.inicializarJuego();
 		LineasRectangulosColores.inicializarTablero();
 		int i = 0, j = 0;
 		while(i < 9){
