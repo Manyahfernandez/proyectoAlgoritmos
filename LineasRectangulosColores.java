@@ -26,15 +26,15 @@ public class LineasRectangulosColores{
 									{6, 6, 6, 6, 6, 6, 6, 6, 6},
 									{6, 6, 6, 6, 6, 6, 6, 6, 6}};
 	public static void inicializarJuego(){
-
+		
 	}
 
 	public static void inicializarTablero(){
 		int k, j, i = 0, siguiente, anterior = 6;
 
 		while(i < 3){
-			j = (int)(Math.random()*8);
-			k = (int)(Math.random()*8);
+			j = (int)(Math.random()*9);
+			k = (int)(Math.random()*9);
 			siguiente = (int)(Math.random()*6); 
 			if(tablero[j][k] == 6 && siguiente != anterior){
 				tablero[j][k] = siguiente;
@@ -185,8 +185,8 @@ public class LineasRectangulosColores{
 		int  i = 0, j, k;
 
 		while(i < 3){
-			j = (int)(Math.random()*8);
-			k = (int)(Math.random()*8);
+			j = (int)(Math.random()*9);
+			k = (int)(Math.random()*9);
 			if(tablero[j][k] == 6){
 				tablero[j][k] = proximosObjetos[i];
 				sumaObjetos(proximosObjetos[i]);
@@ -239,5 +239,22 @@ public class LineasRectangulosColores{
 		mt.dibujarLinea(9*longitud/8,longitudPedazo,9*longitud/8 + longitudPedazo,longitudPedazo);
 		mt.dibujarLinea(9*longitud/8, 2*longitudPedazo,9*longitud/8 + longitudPedazo, 2*longitudPedazo);
 		mt.repintar();
+	}
+
+	public static boolean determinarFinaldeJuego(){
+		int i = 0, j = 0;
+
+		while(i < 9){
+			while(j < 9){
+				if(tablero[i][j] == 6){
+					return false;
+				}
+				j++;
+			}
+			j = 0;
+			i++;
+		} 
+
+		return true;
 	}
 }

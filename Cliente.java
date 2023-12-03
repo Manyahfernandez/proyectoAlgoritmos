@@ -13,9 +13,13 @@ public class Cliente{
 		}
 		LineasRectangulosColores.obtenerProximosObjetos();
 		LineasRectangulosColores.mostrarEstadoDelJuego();
-		LineasRectangulosColores.obtenerJugadaValida();
-		LineasRectangulosColores.agregarProximosObjetos();
-		LineasRectangulosColores.obtenerProximosObjetos();
-		LineasRectangulosColores.actualizarEstadoDelJuego();
+
+		while(!LineasRectangulosColores.determinarFinaldeJuego()){
+			LineasRectangulosColores.obtenerJugadaValida();
+			LineasRectangulosColores.agregarProximosObjetos();
+			LineasRectangulosColores.obtenerProximosObjetos();
+			LineasRectangulosColores.actualizarEstadoDelJuego();
+		}
+		
 	}
 }
