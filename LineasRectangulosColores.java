@@ -340,20 +340,4 @@ public class LineasRectangulosColores{
 
 		return true;
 	}
-
-	public static void imprimir(){
-		int i = 0, j = 0;
-		while(i < 9){
-			while(j < 9){
-				System.out.print(LineasRectangulosColores.tablero[i][j] + " ");
-				j++;
-			}
-			System.out.println();
-			j = 0;
-			i++;
-		}
-		System.out.println();
-	}
-
-
 }
