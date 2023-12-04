@@ -11,6 +11,7 @@ public class LineasRectangulosColores{
 	ESFERAG : int --> Número entero que representa al elemento esfera de color verde(GREEN).
 	ESFERAR : int --> Número entero que representa al elemento esfera de color rojo(RED).
 	ESFERAY : int --> Número entero que representa al elemento esfera de color amarillo(YELLOW).
+	ESFERAO : int --> Número entero que representa al elemento esfera de color anaranjado(ORANGE).
 	VACIO: int --> Número entero que representa a una casilla vacia en el juego.
 	COLORESSELECCIONADOS: Colores[] --> Colores de cada uno de los elementos en el tablero, donde cada posicion concuerda con el número del elemento.
 	puntaje : int --> Almacena el puntaje del jugador.
@@ -24,25 +25,25 @@ public class LineasRectangulosColores{
 	tablero : int[][] --> Tablero del juego.
 	*/
 
-	public final int CUADRADO = 0, ESFERAB = 1, ESFERAC = 2, ESFERAG = 3, ESFERAR = 4, ESFERAY = 5, VACIO = 6;
-	public static final Colores[] COLORESSELECCIONADOS = {Colores.MAGENTA, Colores.BLUE, Colores.CYAN, Colores.GREEN, Colores.RED, Colores.YELLOW};
+	public final int CUADRADO = 0, ESFERAB = 1, ESFERAC = 2, ESFERAG = 3, ESFERAR = 4, ESFERAY = 5, ESFERAO = 6, VACIO = 7;
+	public static final Colores[] COLORESSELECCIONADOS = {Colores.MAGENTA, Colores.BLUE, Colores.CYAN, Colores.GREEN, Colores.RED, Colores.YELLOW, Colores.ORANGE};
 	public static int puntaje;
 	public static MaquinaDeTrazados mt;
-	public static int[][] movimientos = {{0,0},{-1,0},{1,0},{0,1},{0,-1}};
-	public static int[] proximosObjetos = {6,6,6};
-	public static int[] cantidadDeElementos = {0,0,0,0,0,0};
+	public static int[][] movimientos = {{0,0},{-1,0},{1,0},{0,1},{0,-1},{1,1},{1,-1},{-1,1},{-1,-1}};
+	public static int[] proximosObjetos = {7,7,7};
+	public static int[] cantidadDeElementos = {0,0,0,0,0,0,0};
 	public static int[] jugada;
 	public static boolean caminoAbierto;
 	public static boolean finalDelJuego;
-	public static int[][] tablero = {{6, 6, 6, 6, 6, 6, 6, 6, 6},
-									{6, 6, 6, 6, 6, 6, 6, 6, 6},
-									{6, 6, 6, 6, 6, 6, 6, 6, 6},
-									{6, 6, 6, 6, 6, 6, 6, 6, 6},
-									{6, 6, 6, 6, 6, 6, 6, 6, 6},
-									{6, 6, 6, 6, 6, 6, 6, 6, 6},
-									{6, 6, 6, 6, 6, 6, 6, 6, 6},
-									{6, 6, 6, 6, 6, 6, 6, 6, 6},
-									{6, 6, 6, 6, 6, 6, 6, 6, 6}};
+	public static int[][] tablero = {{7, 7, 7, 7, 7, 7, 7, 7, 7},
+									{7, 7, 7, 7, 7, 7, 7, 7, 7},
+									{7, 7, 7, 7, 7, 7, 7, 7, 7},
+									{7, 7, 7, 7, 7, 7, 7, 7, 7},
+									{7, 7, 7, 7, 7, 7, 7, 7, 7},
+									{7, 7, 7, 7, 7, 7, 7, 7, 7},
+									{7, 7, 7, 7, 7, 7, 7, 7, 7},
+									{7, 7, 7, 7, 7, 7, 7, 7, 7},
+									{7, 7, 7, 7, 7, 7, 7, 7, 7}};
 
 	/*----Método que inicializa algunas variables del juego----*/
 
@@ -57,13 +58,13 @@ public class LineasRectangulosColores{
 	/*----Método que inicializa el tablero de juego----*/
 
 	public static void inicializarTablero(){
-		int k, j, i = 0, siguiente, anterior = 6;
+		int k, j, i = 0, siguiente, anterior = 7;
 
 		while(i < 3){
 			j = (int)(Math.random()*9);
 			k = (int)(Math.random()*9);
-			siguiente = (int)(Math.random()*6); 
-			if(tablero[j][k] == 6 && siguiente != anterior){
+			siguiente = (int)(Math.random()*7); 
+			if(tablero[j][k] == 7 && siguiente != anterior){
 				tablero[j][k] = siguiente;
 				anterior = siguiente;
 				sumaObjetos(siguiente);
@@ -74,7 +75,7 @@ public class LineasRectangulosColores{
 
 	/*----Método que incrementa en uno el numero de un elemento en la posicion indicada----*/
 
-	//@ requires 0 <= posicion < 5;
+	//@ requires 0 <= posicion < 7;
 	//@ ensures cantidadDeElementos[posicion] == \old(cantidadDeElementos[posicion]) + 1;
 	public static void sumaObjetos(int posicion){
 		cantidadDeElementos[posicion] += 1;
@@ -84,13 +85,13 @@ public class LineasRectangulosColores{
 
 	public static void obtenerProximosObjetos(){
 		int menor = Integer.MAX_VALUE, i = 0, posicionMenor = 0;
-		proximosObjetos[0] = (int)(Math.random()*6);
-		proximosObjetos[1] = (int)(Math.random()*6);
+		proximosObjetos[0] = (int)(Math.random()*7);
+		proximosObjetos[1] = (int)(Math.random()*7);
 
-		//@ maintaining 0 <= i <= 6;
+		//@ maintaining 0 <= i <= 7;
 		//@ maintaining menor == (\min int j; 0 <= j && j < i; cantidadDeElementos[i]);
-		//@ decreases 6 - i;
-		while(i < 6){
+		//@ decreases 7 - i;
+		while(i < 7){
 			if(menor > cantidadDeElementos[i]){
 				menor = cantidadDeElementos[i];
 				posicionMenor = i;
@@ -111,7 +112,7 @@ public class LineasRectangulosColores{
 
 		while(i < 9){
 			while(j < 9){
-				if(tablero[i][j] != 6){
+				if(tablero[i][j] != 7){
 					if(tablero[i][j] != 0){
 						mt.dibujarOvaloLleno(j*longitudPedazo,i*longitudPedazo,longitudPedazo,longitudPedazo,COLORESSELECCIONADOS[tablero[i][j]]);
 						mt.dibujarOvalo(j*longitudPedazo,i*longitudPedazo,longitudPedazo,longitudPedazo);
@@ -177,9 +178,9 @@ public class LineasRectangulosColores{
 	/*----Método que verifica si el movimiento es valido----*/
 	//@ requires 0 <= posX < 9;
 	//@ requires 0 <= posY < 9;
-	//@ ensures \result == (posX >= 0 && posX < 9 && posY >= 0 && posY < 9 && tablero[posX][posY] == 6);
+	//@ ensures \result == (posX >= 0 && posX < 9 && posY >= 0 && posY < 9 && tablero[posX][posY] == 7);
 	public static boolean esValido(int posX, int posY){
-		if(posX >= 0 && posX < 9 && posY >= 0 && posY < 9 && tablero[posX][posY] == 6){
+		if(posX >= 0 && posX < 9 && posY >= 0 && posY < 9 && tablero[posX][posY] == 7){
 			return true;
 		}
 
@@ -192,14 +193,14 @@ public class LineasRectangulosColores{
 			caminoAbierto = true;
 		}
 		int dir = 0;
-		while(!caminoAbierto && dir < 4){
+		while(!caminoAbierto && dir < 8){
 			dir = dir + 1;
 			if(esValido(posX + movimientos[dir][0], posY + movimientos[dir][1])){
 				tablero[posX + movimientos[dir][0]][posY + movimientos[dir][1]] = tablero[posX][posY];
-				tablero[posX][posY] = 7;
+				tablero[posX][posY] = 8;
 				caminoPosicion(posX + movimientos[dir][0], posY + movimientos[dir][1], finalX, finalY);
 				tablero[posX][posY] = tablero[posX + movimientos[dir][0]][posY + movimientos[dir][1]];
-				tablero[posX + movimientos[dir][0]][posY + movimientos[dir][1]] = 6;
+				tablero[posX + movimientos[dir][0]][posY + movimientos[dir][1]] = 7;
 			}
 		}
 	}
@@ -216,14 +217,14 @@ public class LineasRectangulosColores{
 			jugada[1] = usuario.nextInt();
 			jugada[2] = usuario.nextInt();
 			jugada[3] = usuario.nextInt();
-
-			if(tablero[jugada[2]][jugada[3]] == 6 && tablero[jugada[0]][jugada[1]] != 6){
+ 
+			if(tablero[jugada[2]][jugada[3]] == 7 && tablero[jugada[0]][jugada[1]] != 7){
 				caminoPosicion(jugada[0], jugada[1], jugada[2], jugada[3]);
 			}
 			if(caminoAbierto){
 				valida = true;
 				tablero[jugada[2]][jugada[3]] = tablero[jugada[0]][jugada[1]];
-				tablero[jugada[0]][jugada[1]] = 6; 
+				tablero[jugada[0]][jugada[1]] = 7; 
 			}else{
 				System.out.println("Movimiento invalido");
 			}
@@ -234,8 +235,8 @@ public class LineasRectangulosColores{
 
 		while(i < 9){
 			while(j < 9){
-				if(tablero[i][j] == 7){
-					tablero[i][j] = 6;
+				if(tablero[i][j] == 8){
+					tablero[i][j] = 7;
 				}
 				j++;
 			}
@@ -252,7 +253,7 @@ public class LineasRectangulosColores{
 		while(i < 3){
 			j = (int)(Math.random()*9);
 			k = (int)(Math.random()*9);
-			if(tablero[j][k] == 6){
+			if(tablero[j][k] == 7){
 				tablero[j][k] = proximosObjetos[i];
 				sumaObjetos(proximosObjetos[i]);
 				i++;	
@@ -271,7 +272,7 @@ public class LineasRectangulosColores{
 
 		while(i < 9){
 			while(j < 9){
-				if(tablero[i][j] != 6){
+				if(tablero[i][j] != 7){
 					if(tablero[i][j] != 0){
 						mt.dibujarOvaloLleno(j*longitudPedazo,i*longitudPedazo,longitudPedazo,longitudPedazo,COLORESSELECCIONADOS[tablero[i][j]]);
 						mt.dibujarOvalo(j*longitudPedazo,i*longitudPedazo,longitudPedazo,longitudPedazo);
@@ -316,19 +317,19 @@ public class LineasRectangulosColores{
 	/*----Funcion que indica que si el juego termino----*/
 
 	//@ requires true;
-	//@ ensures \result == (\forall int i; 0 <= i && i < 9; \forall int j;  0 <= j && j < 9; tablero[i][j] != 6);
+	//@ ensures \result == (\forall int i; 0 <= i && i < 9; \forall int j;  0 <= j && j < 9; tablero[i][j] != 7);
 	public static boolean determinarFinaldeJuego(){
 		int i = 0, j = 0;
 
 		//@ maintaining 0 <= i <= 9;
-		//@ maintaining (\forall int h; 0 <= h && h < i; \forall int k;  0 <= k && k < 9; tablero[h][k] != 6);
+		//@ maintaining (\forall int h; 0 <= h && h < i; \forall int k;  0 <= k && k < 9; tablero[h][k] != 7);
 		//@ decreases 9-i;
 		while(i < 9){
 			//@ maintaining 0 <= j <= 9;
-			//@ maintaining (\forall int k;  0 <= k && k < j; tablero[i][k] != 6);
+			//@ maintaining (\forall int k;  0 <= k && k < j; tablero[i][k] != 7);
 			//@ decreases 9-j;
 			while(j < 9){
-				if(tablero[i][j] == 6){
+				if(tablero[i][j] == 7){
 					return false;
 				}
 				j++;
@@ -339,5 +340,20 @@ public class LineasRectangulosColores{
 
 		return true;
 	}
+
+	public static void imprimir(){
+		int i = 0, j = 0;
+		while(i < 9){
+			while(j < 9){
+				System.out.print(LineasRectangulosColores.tablero[i][j] + " ");
+				j++;
+			}
+			System.out.println();
+			j = 0;
+			i++;
+		}
+		System.out.println();
+	}
+
 
 }
