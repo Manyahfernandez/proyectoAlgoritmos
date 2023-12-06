@@ -1,5 +1,5 @@
 import java.awt.Font;
-
+import java.util.Scanner;
 public class LineasRectangulosColores{
 
 	/*
@@ -231,34 +231,39 @@ public class LineasRectangulosColores{
 	/*
 		Descripcion: Verifica si la jugada que quiere hacer el jugador es valida
 	*/
-	//@ requires  0 <= posX < 9;
-	//@ requires  0 <= posY < 9;
-	//@ requires  0 <= finalX < 9;
-	//@ requires  0 <= finalY < 9;
-	public static /* pure */boolean obtenerJugadasValida(int posX, int posY, int finalX, int finalY){
-		jugada[0] = posX;
-		jugada[1] = posY;
-		jugada[2] = finalX;
-		jugada[3] = finalY;
- 		//@ assert 0 <= jugada[0] < 9;
- 		//@ assert 0 <= jugada[1] < 9;
- 		//@ assert 0 <= jugada[2] < 9;
- 		//@ assert 0 <= jugada[3] < 9;
-		if(tablero[jugada[2]][jugada[3]] == 7 && tablero[jugada[0]][jugada[1]] != 7 && caminoPosicion(jugada[0], jugada[1])){
-			tablero[jugada[2]][jugada[3]] = tablero[jugada[0]][jugada[1]];
-			tablero[jugada[0]][jugada[1]] = 7; 
-			return true;
-		}
-		else{
-			System.out.println("Movimiento invalido");
-			return false;
-		}
+	
+	public static void obtenerJugadasValida(){
+		Scanner usuario = new Scanner(System.in);
+		boolean valida = false;
+		do{	
+			System.out.println("Ingrese movimiento: ");
+			jugada[0] = usuario.nextInt();
+			jugada[1] = usuario.nextInt();
+			jugada[2] = usuario.nextInt();
+			jugada[3] = usuario.nextInt();
+ 			//@ assert 0 <= jugada[0] < 9;
+ 			//@ assert 0 <= jugada[1] < 9;
+ 			//@ assert 0 <= jugada[2] < 9;
+ 			//@ assert 0 <= jugada[3] < 9;
+			if(tablero[jugada[2]][jugada[3]] == 7 && tablero[jugada[0]][jugada[1]] != 7 && caminoPosicion(jugada[0], jugada[1])){
+				tablero[jugada[2]][jugada[3]] = tablero[jugada[0]][jugada[1]];
+				tablero[jugada[0]][jugada[1]] = 7; 
+				valida = true;
+			}
+			else{
+				System.out.println("Movimiento invalido");
+			}
+		}while(!valida);
 	}
 
 	/*----Método que agrega los proximos objetos al tablero----*/
-
+	/*
+		Descripcion: Agrega en el tablero los objetos que se encuentra en proximosObjetos.
+	*/
 	public static void agregarProximosObjetos(){
 		int  i = 0, j, k;
+
+		//@ maintaining 0 <= i <= 3;
 
 		while(i < 3){
 			j = (int)(Math.random()*9);
@@ -272,7 +277,9 @@ public class LineasRectangulosColores{
 	}
 
 	/*----Método que actualiza el tablero de juego----*/
-
+	/*
+		Descripcion: Actualiza y repinta la pantalla grafica del juego, colocando los nuevos elementos en este.
+	*/
 	public static void actualizarEstadoDelJuego(){
 		int longitud = 459, longitudPedazo = longitud/9, i = 0;
 		mt.dibujarRectanguloLleno(0, 0, longitud, longitud,Colores.GRAY);
@@ -325,6 +332,10 @@ public class LineasRectangulosColores{
 	}
 
 	/*----Funcion que indica que si el juego termino----*/
+	/*
+		Descripcion: Determina si es el final del juego.
+		Retona : boolean --> que indica si queda alguna casilla vacia en el tablero.
+	*/
 	//@ requires true;
 	//@ ensures \result == (\forall int i; 0 <= i && i < 9; \forall int j;  0 <= j && j < 9; tablero[i][j] != 7);
 	public static boolean determinarFinaldeJuego(){
@@ -351,8 +362,6 @@ public class LineasRectangulosColores{
 	}
 
 	public static void main(String[] args) {
-		int fila = 0, columna = 0, filafinal = 0, columnafinal = 0;
-		boolean valida = false;
 		LineasRectangulosColores.inicializarJuego();
 		LineasRectangulosColores.inicializarTablero();
 		int i = 0, j = 0;
@@ -369,15 +378,7 @@ public class LineasRectangulosColores{
 		LineasRectangulosColores.mostrarEstadoDelJuego();
 
 		while(!LineasRectangulosColores.determinarFinaldeJuego()){
-			do{
-				valida = false;
-				System.out.println("Ingresar movimiento:");
-				fila = Integer.parseInt(args[0]);
-				columna = Integer.parseInt(args[1]);
-				filafinal = Integer.parseInt(args[2]);
-				columnafinal = Integer.parseInt(args[3]);
-				valida = LineasRectangulosColores.obtenerJugadasValida(fila,columna,filafinal,columnafinal);
-			}while(!valida);
+			LineasRectangulosColores.obtenerJugadasValida();
 			LineasRectangulosColores.agregarProximosObjetos();
 			LineasRectangulosColores.obtenerProximosObjetos();
 			LineasRectangulosColores.actualizarEstadoDelJuego();
