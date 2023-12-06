@@ -1,4 +1,3 @@
-import java.util.Scanner;
 import java.awt.Font;
 
 public class LineasRectangulosColores{
@@ -11,7 +10,7 @@ public class LineasRectangulosColores{
 	ESFERAG : int --> Número entero que representa al elemento esfera de color verde(GREEN).
 	ESFERAR : int --> Número entero que representa al elemento esfera de color rojo(RED).
 	ESFERAY : int --> Número entero que representa al elemento esfera de color amarillo(YELLOW).
-	ESFERAO : int --> Número entero que representa al elemento esfera de color anaranjado(ORANGE).
+	ESFERAO : int --> Número entero que representa al elemento esfera de color anaranjada(ORANGE).
 	VACIO: int --> Número entero que representa a una casilla vacia en el juego.
 	COLORESSELECCIONADOS: Colores[] --> Colores de cada uno de los elementos en el tablero, donde cada posicion concuerda con el número del elemento.
 	puntaje : int --> Almacena el puntaje del jugador.
@@ -20,8 +19,6 @@ public class LineasRectangulosColores{
 	proximosObjetos : int[] --> Almacena los proximos objetos a colocar en el tablero.
 	cantidadDeElementos : int[] --> Almacena la cantidad de cada uno de los elementos en el tablero, donde la posicion en el arreglo representa al elemento.
 	jugada : int[] --> Almacena el elemento a mover y al sitio donde se mueve dicho elemento.
-	caminoAbierto : boolean --> Verifica si es posible mover el elemento a la posicion indicada.
-	finalDelJuego : boolean --> Indica si el juego termino o no;
 	tablero : int[][] --> Tablero del juego.
 	*/
 
@@ -33,8 +30,6 @@ public class LineasRectangulosColores{
 	public static int[] proximosObjetos = {7,7,7};
 	public static int[] cantidadDeElementos = {0,0,0,0,0,0,0};
 	public static int[] jugada;
-	public static boolean caminoAbierto;
-	public static boolean finalDelJuego;
 	public static int[][] tablero = {{7, 7, 7, 7, 7, 7, 7, 7, 7},
 									{7, 7, 7, 7, 7, 7, 7, 7, 7},
 									{7, 7, 7, 7, 7, 7, 7, 7, 7},
@@ -46,17 +41,23 @@ public class LineasRectangulosColores{
 									{7, 7, 7, 7, 7, 7, 7, 7, 7}};
 
 	/*----Método que inicializa algunas variables del juego----*/
-
+	/*
+		Descripcion: Inicializa la variable mt, puntaje,  jugada.
+	*/
+	//@ requires true;
+	//@ ensures true;
 	public static void inicializarJuego(){
 		mt = new MaquinaDeTrazados(700, 700, "Lineas de colores y rectangulos", Colores.WHITE);
 		puntaje = 0;
 		jugada = new int[4];
-		caminoAbierto = false;
-		finalDelJuego = false;
 	}
 
 	/*----Método que inicializa el tablero de juego----*/
-
+	/*
+		Descripcion: Inicializa el tablero de juego, con los primeros 3 elementos en el tablero.
+	*/
+	//@ requires true;
+	//@ ensures true;
 	public static void inicializarTablero(){
 		int k, j, i = 0, siguiente, anterior = 7;
 
@@ -74,7 +75,10 @@ public class LineasRectangulosColores{
 	}
 
 	/*----Método que incrementa en uno el numero de un elemento en la posicion indicada----*/
-
+	/*
+		Descricion: Incrementa en uno la cantidad del elemento.
+		Parametros: posicion : int--> Es la posicion en el arreglo cantidadDeElementos.
+	*/
 	//@ requires 0 <= posicion < 7;
 	//@ ensures cantidadDeElementos[posicion] == \old(cantidadDeElementos[posicion]) + 1;
 	public static void sumaObjetos(int posicion){
@@ -82,7 +86,11 @@ public class LineasRectangulosColores{
 	}
 
 	/*----Método para obtener los proximos objetos---*/
-
+	/*
+		Descripcion: Obtiene los proximos 3 elementos a colocar en el tablero.
+	*/
+	//@ requires true;
+	//@ ensures true;
 	public static void obtenerProximosObjetos(){
 		int menor = Integer.MAX_VALUE, i = 0, posicionMenor = 0;
 		proximosObjetos[0] = (int)(Math.random()*7);
@@ -102,7 +110,12 @@ public class LineasRectangulosColores{
 	}
 
 	/*----Método para mostrar el estado del juego manera grafica----*/
-
+	/*
+		Descripcion: Muestra  de forma grafica el estado del juego. Se eligio 459 ya que primero es multiplo de 9 por tanto es mucho mas facil
+					 hacer la division de las columnas y filas.
+	*/
+	//@ requires true;
+	//@ ensures true;
 	public static void mostrarEstadoDelJuego(){
 		int longitud = 459, longitudPedazo = longitud/9, i = 0;
 		mt.dibujarRectanguloLleno(0, 0, longitud, longitud,Colores.GRAY);
@@ -176,10 +189,15 @@ public class LineasRectangulosColores{
 
 
 	/*----Método que verifica si el movimiento es valido----*/
+	/*
+		Descripcion: Verifica si se posee una casilla vacia alrededor, comprobando que no se salga del tablero.
+		Parametros: posX : int --> posicion de la fila a la cual se va a mover.
+					posY : int --> posicion de la columna a la cual se va a mover.
+	*/
 	//@ requires 0 <= posX < 9;
 	//@ requires 0 <= posY < 9;
 	//@ ensures \result == (posX >= 0 && posX < 9 && posY >= 0 && posY < 9 && tablero[posX][posY] == 7);
-	public static boolean esValido(int posX, int posY){
+	public static /*@ pure @*/ boolean esValido(int posX, int posY){
 		if(posX >= 0 && posX < 9 && posY >= 0 && posY < 9 && tablero[posX][posY] == 7){
 			return true;
 		}
@@ -187,61 +205,53 @@ public class LineasRectangulosColores{
 		return false;
 	}
 
-	//RECURSIVIDAD
-	public static void caminoPosicion(int posX, int posY, int finalX, int finalY){
-		if(posX == finalX && posY == finalY){
-			caminoAbierto = true;
-		}
+	/*----Funcion que verifica si existe casilla vacia----*/
+	/*
+		Descripcion: Verifica alrededor de la posicion del elemento si existe una casilla vacia.
+		Parametros: posX : int --> posicion de la fila en la que se encuentra el elemento
+					posY : int --> posicion de la columna en la que se encuentra el elemento
+	*/
+	//@ requires 0 <= posX < 9;
+	//@ requires 0 <= posY < 9;
+	//@ ensures \result == (\exists int i; 0 <= i && i < 9; esValido(posX + movimientos[i][0], posY + movimientos[i][1]));
+	public static /*@ pure @*/ boolean caminoPosicion(int posX, int posY){
 		int dir = 0;
-		while(!caminoAbierto && dir < 8){
+
+		while(dir < 8){
 			dir = dir + 1;
+
 			if(esValido(posX + movimientos[dir][0], posY + movimientos[dir][1])){
-				tablero[posX + movimientos[dir][0]][posY + movimientos[dir][1]] = tablero[posX][posY];
-				tablero[posX][posY] = 8;
-				caminoPosicion(posX + movimientos[dir][0], posY + movimientos[dir][1], finalX, finalY);
-				tablero[posX][posY] = tablero[posX + movimientos[dir][0]][posY + movimientos[dir][1]];
-				tablero[posX + movimientos[dir][0]][posY + movimientos[dir][1]] = 7;
+				return true;
 			}
 		}
+		return false;
 	}
 
-
-	public static void obtenerJugadaValida(){
-		boolean valida = false;
-		Scanner usuario = new Scanner(System.in);
-		caminoAbierto = false;
-
-		do{
-			System.out.println("Ingresar movimiento:");
-			jugada[0] = usuario.nextInt();
-			jugada[1] = usuario.nextInt();
-			jugada[2] = usuario.nextInt();
-			jugada[3] = usuario.nextInt();
- 
-			if(tablero[jugada[2]][jugada[3]] == 7 && tablero[jugada[0]][jugada[1]] != 7){
-				caminoPosicion(jugada[0], jugada[1], jugada[2], jugada[3]);
-			}
-			if(caminoAbierto){
-				valida = true;
-				tablero[jugada[2]][jugada[3]] = tablero[jugada[0]][jugada[1]];
-				tablero[jugada[0]][jugada[1]] = 7; 
-			}else{
-				System.out.println("Movimiento invalido");
-			}
-
-		}while(!valida);
-
-		int i = 0, j = 0;
-
-		while(i < 9){
-			while(j < 9){
-				if(tablero[i][j] == 8){
-					tablero[i][j] = 7;
-				}
-				j++;
-			}
-			j = 0;
-			i++;
+	/*----Método que verifica la jugada ----*/
+	/*
+		Descripcion: Verifica si la jugada que quiere hacer el jugador es valida
+	*/
+	//@ requires  0 <= posX < 9;
+	//@ requires  0 <= posY < 9;
+	//@ requires  0 <= finalX < 9;
+	//@ requires  0 <= finalY < 9;
+	public static /* pure */boolean obtenerJugadasValida(int posX, int posY, int finalX, int finalY){
+		jugada[0] = posX;
+		jugada[1] = posY;
+		jugada[2] = finalX;
+		jugada[3] = finalY;
+ 		//@ assert 0 <= jugada[0] < 9;
+ 		//@ assert 0 <= jugada[1] < 9;
+ 		//@ assert 0 <= jugada[2] < 9;
+ 		//@ assert 0 <= jugada[3] < 9;
+		if(tablero[jugada[2]][jugada[3]] == 7 && tablero[jugada[0]][jugada[1]] != 7 && caminoPosicion(jugada[0], jugada[1])){
+			tablero[jugada[2]][jugada[3]] = tablero[jugada[0]][jugada[1]];
+			tablero[jugada[0]][jugada[1]] = 7; 
+			return true;
+		}
+		else{
+			System.out.println("Movimiento invalido");
+			return false;
 		}
 	}
 
@@ -315,7 +325,6 @@ public class LineasRectangulosColores{
 	}
 
 	/*----Funcion que indica que si el juego termino----*/
-
 	//@ requires true;
 	//@ ensures \result == (\forall int i; 0 <= i && i < 9; \forall int j;  0 <= j && j < 9; tablero[i][j] != 7);
 	public static boolean determinarFinaldeJuego(){
@@ -339,5 +348,39 @@ public class LineasRectangulosColores{
 		} 
 
 		return true;
+	}
+
+	public static void main(String[] args) {
+		int fila = 0, columna = 0, filafinal = 0, columnafinal = 0;
+		boolean valida = false;
+		LineasRectangulosColores.inicializarJuego();
+		LineasRectangulosColores.inicializarTablero();
+		int i = 0, j = 0;
+		while(i < 9){
+			while(j < 9){
+				System.out.print(LineasRectangulosColores.tablero[i][j] + " ");
+				j++;
+			}
+			System.out.println();
+			j = 0;
+			i++;
+		}
+		LineasRectangulosColores.obtenerProximosObjetos();
+		LineasRectangulosColores.mostrarEstadoDelJuego();
+
+		while(!LineasRectangulosColores.determinarFinaldeJuego()){
+			do{
+				valida = false;
+				System.out.println("Ingresar movimiento:");
+				fila = Integer.parseInt(args[0]);
+				columna = Integer.parseInt(args[1]);
+				filafinal = Integer.parseInt(args[2]);
+				columnafinal = Integer.parseInt(args[3]);
+				valida = LineasRectangulosColores.obtenerJugadasValida(fila,columna,filafinal,columnafinal);
+			}while(!valida);
+			LineasRectangulosColores.agregarProximosObjetos();
+			LineasRectangulosColores.obtenerProximosObjetos();
+			LineasRectangulosColores.actualizarEstadoDelJuego();
+		}
 	}
 }
