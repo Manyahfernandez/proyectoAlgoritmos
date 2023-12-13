@@ -45,8 +45,8 @@ public class LineasRectangulosColores{
 	/*
 		Descripcion: Inicializa la variable mt, puntaje,  jugada.
 	*/
-	//@ requires true;
-	//@ ensures true;
+	//@(*Precondicion: Ninguna*);
+	//@(*Postcondicion: Se debieron inicializar las variables mt, puntaje y jugada*);
 	public static void inicializarJuego(){
 		mt = new MaquinaDeTrazados(500, 500, "Lineas de colores y rectangulos", Colores.WHITE);
 		puntaje = 0;
@@ -57,8 +57,8 @@ public class LineasRectangulosColores{
 	/*
 		Descripcion: Inicializa el tablero de juego, con los primeros 3 elementos en el tablero.
 	*/
-	//@ requires true;
-	//@ ensures true;
+	//@(*Precondicion: Haber inicializado el juego con iniciarJuego()*)
+	//@(*Postcondicion: Haber colcado en el tablero 3 elemetos de manera aleatoria*)
 	public static void inicializarTablero(){
 		int k, j, i = 0, siguiente, anterior = 7;
 
@@ -90,8 +90,8 @@ public class LineasRectangulosColores{
 	/*
 		Descripcion: Obtiene los proximos 3 elementos a colocar en el tablero.
 	*/
-	//@ requires true;
-	//@ ensures true;
+	//@(*Precondicion: Haber colocado los elementos el el tablero con agregarProximosObjetos()*);
+	//@(*Postcondicion: Haber seleccionado 3 nuevos elementos a agregar al tablero*);
 	public static void obtenerProximosObjetos(){
 		int menor = Integer.MAX_VALUE, i = 0, posicionMenor = 0;
 		proximosObjetos[0] = (int)(Math.random()*7);
@@ -115,8 +115,8 @@ public class LineasRectangulosColores{
 		Descripcion: Muestra  de forma grafica el estado del juego. Se eligio 459 ya que primero es multiplo de 9 por tanto es mucho mas facil
 					 hacer la division de las columnas y filas.
 	*/
-	//@ requires true;
-	//@ ensures true;
+	//@(*Precondicion: Haber inicializado el tablero con inicializarTablero()*);
+	//@(*Postcondicion: Mostrar de maner grafica el tablero de juego inicial*);
 	public static void mostrarEstadoDelJuego(){
 		int longitud = 351, longitudPedazo = longitud/9, i = 0;
 		mt.dibujarRectanguloLleno(0, 0, longitud, longitud,Colores.GRAY);
@@ -234,7 +234,8 @@ public class LineasRectangulosColores{
 	/*
 		Descripcion: Verifica si la jugada que quiere hacer el jugador es valida
 	*/
-	
+	//@(*Precondicion: Haber inicializado el tablero de juego y mostrar el tablero de forma grafica*);
+	//@(*Postcondicion: Mover un elemento a una casilla vacia*);
 	public static void obtenerJugadasValida(){
 		Scanner usuario = new Scanner(System.in);
 		boolean valida = false;
@@ -277,12 +278,14 @@ public class LineasRectangulosColores{
 	/*
 		Descripcion: Agrega en el tablero los objetos que se encuentra en proximosObjetos.
 	*/
+	//@(*Precondicion: No haber eliminado ninguna linea o cuadrado de tablero*);
+	//@(*Postcondicion: Colocá tres nuevos elementos en el tablero de forma aleatoria*);
 	public static void agregarProximosObjetos(){
 		int  i = 0, j, k;
 
 		//@ maintaining 0 <= i <= 3;
 
-		while(i < 3){
+		while(i < 3 && !determinarFinaldeJuego()){
 			j = (int)(Math.random()*9);
 			k = (int)(Math.random()*9);
 			if(tablero[j][k] == 7){
@@ -297,6 +300,8 @@ public class LineasRectangulosColores{
 	/*
 		Descripcion: Actualiza y repinta la pantalla grafica del juego, colocando los nuevos elementos en este.
 	*/
+	//@(*Precondicion: Haner agregado o movido algun elemento en el tablero*);
+	//@(*Postconficion: Tablero de juego actualizado*);
 	public static void actualizarEstadoDelJuego(){
 		int longitud = 351, longitudPedazo = longitud/9, i = 0;
 		mt.dibujarRectanguloLleno(0, 0, longitud, longitud,Colores.GRAY);
@@ -352,7 +357,7 @@ public class LineasRectangulosColores{
 	/*----Funcion que indica que si el juego termino----*/
 	/*
 		Descripcion: Determina si es el final del juego.
-		Retona : boolean --> que indica si queda alguna casilla vacia en el tablero.
+		Retonar : boolean --> que indica si queda alguna casilla vacia en el tablero.
 	*/
 	//@ requires true;
 	//@ ensures \result == (\forall int i; 0 <= i && i < 9; \forall int j;  0 <= j && j < 9; tablero[i][j] != 7);
@@ -379,6 +384,12 @@ public class LineasRectangulosColores{
 		return true;
 	}
 
+	/*----Método que suma puntaje del usuario---*/
+	/*
+		Descripcion: Aumenta el puntaje del usuario.
+	*/
+	//@ requires cantidad >= 0;
+	//@ ensures \old(puntaje) > puntaje;
 	public static void sumarPuntaje(int cantidad){
 		if(cantidad == 4){
 			puntaje += 5;
@@ -397,6 +408,11 @@ public class LineasRectangulosColores{
 		}
 	}
 
+	/*----Método que modifica los elemetos eliminados del tablero---*/
+	/*
+		Descripcion: Determina si es el final del juego.
+	*/
+	//@ requires 0 <= objeto <= 7;
 	public static void matrizProcesados(int objeto){
 		int i = 0, j = 0;
 		while(i < 9){
@@ -484,7 +500,7 @@ public class LineasRectangulosColores{
 		validarCantidad(cantidad, tablero[posX][posY]);
 	}
 
-	public static int validarCuadrado(int posX, int posY){
+	public static /*@ pure @*/ int validarCuadrado(int posX, int posY){
 		int posicionY = posY, i = posX, j = posY, cantidady = 1, cantidad, cantidadx = 1, cantidadRetornada = 0, posicionX;
 		posicionX = posX + 1;
 		posicionY = posY + 1;
@@ -526,10 +542,6 @@ public class LineasRectangulosColores{
 		return cantidadRetornada;
 	}
 
-	public static void verificarSubCuadrado(int posX, int poxY){
-
-	}
-
 	public static void cuadradoVerificar(int posX, int posY){
 		int cantidad = validarCuadrado(posX, posY);
 		if(cantidad != -1){
@@ -543,7 +555,7 @@ public class LineasRectangulosColores{
 	}
 
 
-	public static boolean procesarObjetosDelTablero(){
+	public static /*@ pure @*/ boolean procesarObjetosDelTablero(){
 		int i = 0, j = 0;
 
 		while(i < 9){
@@ -580,28 +592,89 @@ public class LineasRectangulosColores{
 		return false;
 	}
 
+	public static void menu(){
+		mt = new MaquinaDeTrazados(450, 450, "Lineas de colores y rectangulos", Colores.WHITE);
+		mt.dibujarRectanguloLleno(0,0,15,15,COLORESSELECCIONADOS[0]);
+		mt.dibujarRectangulo(0,0,15,15);
+		mt.dibujarOvaloLleno(15,0,15,15,COLORESSELECCIONADOS[1]);
+		mt.dibujarOvalo(15,0,15,15);
+		mt.dibujarOvaloLleno(30,0,15,15,COLORESSELECCIONADOS[2]);
+		mt.dibujarOvalo(30,0,15,15);
+		mt.dibujarOvaloLleno(45,0,15,15,COLORESSELECCIONADOS[3]);
+		mt.dibujarOvalo(45,0,15,15);
+		mt.dibujarOvaloLleno(60,0,15,15,COLORESSELECCIONADOS[4]);
+		mt.dibujarOvalo(60,0,15,15);
+		mt.dibujarOvaloLleno(75,0,15,15,COLORESSELECCIONADOS[5]);
+		mt.dibujarOvalo(75,0,15,15);
+		mt.dibujarOvaloLleno(90,0,15,15,COLORESSELECCIONADOS[6]);
+		mt.dibujarOvalo(90,0,15,15);
+		mt.configurarFuente("SansSerif", Font.BOLD, 12);
+		mt.dibujarString("Lineas y Rectangulos de Colores",110, 15, Colores.BLACK);
+		mt.dibujarOvaloLleno(345,0,15,15,COLORESSELECCIONADOS[6]);
+		mt.dibujarOvalo(345,0,15,15);
+		mt.dibujarOvaloLleno(360,0,15,15,COLORESSELECCIONADOS[5]);
+		mt.dibujarOvalo(360,0,15,15);
+		mt.dibujarOvaloLleno(375,0,15,15,COLORESSELECCIONADOS[4]);
+		mt.dibujarOvalo(375,0,15,15);
+		mt.dibujarOvaloLleno(390,0,15,15,COLORESSELECCIONADOS[3]);
+		mt.dibujarOvalo(390,0,15,15);
+		mt.dibujarOvaloLleno(405,0,15,15,COLORESSELECCIONADOS[2]);
+		mt.dibujarOvalo(405,0,15,15);
+		mt.dibujarOvaloLleno(420,0,15,15,COLORESSELECCIONADOS[1]);
+		mt.dibujarOvalo(420,0,15,15);
+		mt.dibujarRectanguloLleno(435,0,15,15,COLORESSELECCIONADOS[0]);
+		mt.dibujarRectangulo(435,0,15,15);
+		mt.mostrar();
+	}
+
+	public static void procesarFinalJuego(){
+		mt.dibujarRectanguloLleno(0,150,500,100,Colores.WHITE);
+		mt.dibujarRectangulo(0,150,500,100);
+		mt.configurarFuente("Monospaced", Font.BOLD, 24);
+		mt.dibujarString("Juego Terminado",150,210, Colores.BLACK);
+		mt.configurarFuente("Monospaced", Font.BOLD, 21);
+		mt.dibujarRectanguloLleno(0, 260, 500, 50, Colores.BLACK);
+		mt.dibujarString("Puntaje: " + puntaje,185,295, Colores.WHITE);
+	}
+
 	public static void main(String[] args) {
-		int i = 0;
-
+		int seleccion;
+		Scanner usuario = new Scanner(System.in);
+		//LineasRectangulosColores.menu();
 		System.out.println("\t Lineas de Rectangulos y Colores: ");
-		LineasRectangulosColores.inicializarJuego();
-		LineasRectangulosColores.inicializarTablero();
-		LineasRectangulosColores.obtenerProximosObjetos();
-		LineasRectangulosColores.mostrarEstadoDelJuego();
+		System.out.println("1. Iniciar Juego");
+		System.out.println("2. Ver instrucciones del juego");
+		System.out.println("3. Salir del juego");
+		System.out.println("Bienvenido al juego. Seleccione una opcion: ");
+		do{
+			seleccion = usuario.nextInt();
+			if(seleccion != 1 && seleccion != 2 && seleccion != 3){
+				System.out.println("Seleccione una opcion valida: ");
+				seleccion = -1;
+			}
+		}while(seleccion == -1);
 
-		while(!LineasRectangulosColores.determinarFinaldeJuego()){
-			LineasRectangulosColores.obtenerJugadasValida();
-			LineasRectangulosColores.actualizarEstadoDelJuego();
-			if(!LineasRectangulosColores.procesarObjetosDelTablero()){
-				LineasRectangulosColores.agregarProximosObjetos();
-				LineasRectangulosColores.obtenerProximosObjetos();
-				while(i < 7){
-				System.out.println(cantidadDeElementos[i]);
-				i++;
+		if(seleccion == 1){
+			//mt.terminar();
+			LineasRectangulosColores.inicializarJuego();
+			LineasRectangulosColores.inicializarTablero();
+			LineasRectangulosColores.obtenerProximosObjetos();
+			LineasRectangulosColores.mostrarEstadoDelJuego();
+
+			while(!LineasRectangulosColores.determinarFinaldeJuego()){
+				LineasRectangulosColores.obtenerJugadasValida();
+				LineasRectangulosColores.actualizarEstadoDelJuego();
+				if(!LineasRectangulosColores.procesarObjetosDelTablero()){
+					LineasRectangulosColores.agregarProximosObjetos();
+					LineasRectangulosColores.obtenerProximosObjetos();
+				}
+				LineasRectangulosColores.actualizarEstadoDelJuego();
 			}
-			i = 0;
-			}
-			LineasRectangulosColores.actualizarEstadoDelJuego();
+
+			LineasRectangulosColores.procesarFinalJuego();
+		}
+		if(seleccion == 3){
+			mt.terminar();
 		}
 	}
 }
