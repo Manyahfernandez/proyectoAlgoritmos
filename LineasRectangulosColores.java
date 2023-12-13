@@ -48,7 +48,7 @@ public class LineasRectangulosColores{
 	//@ requires true;
 	//@ ensures true;
 	public static void inicializarJuego(){
-		mt = new MaquinaDeTrazados(700, 700, "Lineas de colores y rectangulos", Colores.WHITE);
+		mt = new MaquinaDeTrazados(500, 500, "Lineas de colores y rectangulos", Colores.WHITE);
 		puntaje = 0;
 		jugada = new int[4];
 	}
@@ -118,7 +118,7 @@ public class LineasRectangulosColores{
 	//@ requires true;
 	//@ ensures true;
 	public static void mostrarEstadoDelJuego(){
-		int longitud = 459, longitudPedazo = longitud/9, i = 0;
+		int longitud = 351, longitudPedazo = longitud/9, i = 0;
 		mt.dibujarRectanguloLleno(0, 0, longitud, longitud,Colores.GRAY);
 		mt.dibujarRectangulo(0, 0, longitud, longitud);
 
@@ -298,7 +298,7 @@ public class LineasRectangulosColores{
 		Descripcion: Actualiza y repinta la pantalla grafica del juego, colocando los nuevos elementos en este.
 	*/
 	public static void actualizarEstadoDelJuego(){
-		int longitud = 459, longitudPedazo = longitud/9, i = 0;
+		int longitud = 351, longitudPedazo = longitud/9, i = 0;
 		mt.dibujarRectanguloLleno(0, 0, longitud, longitud,Colores.GRAY);
 		mt.dibujarRectangulo(0, 0, longitud, longitud);
 
@@ -485,17 +485,28 @@ public class LineasRectangulosColores{
 	}
 
 	public static int validarCuadrado(int posX, int posY){
-		int posicionY = posY, i = posX, j = posY, cantidad = 1, cantidadRetornada = 0;
-
+		int posicionY = posY, i = posX, j = posY, cantidady = 1, cantidad, cantidadx = 1, cantidadRetornada = 0, posicionX;
+		posicionX = posX + 1;
 		posicionY = posY + 1;
 
 		while(validarSiquienteObjeto(posX, posicionY, tablero[posX][posY])){
-			cantidad++;
+			cantidady++;
 			posicionY++;
 		}
 
-		if(cantidad == 1){
+		while(validarSiquienteObjeto(posicionX, posY, tablero[posX][posY])){
+			cantidadx++;
+			posicionX++;
+		}
+
+		if(cantidadx == 1 || cantidady == 1 || cantidadx == 2 || cantidady == 2){
 			return -1;
+		}
+
+		if(cantidadx >= cantidady){
+			cantidad = cantidadx;
+		}else{
+			cantidad = cantidady;
 		}
 
 		while(i < posX + cantidad){
@@ -513,6 +524,10 @@ public class LineasRectangulosColores{
 		}
 
 		return cantidadRetornada;
+	}
+
+	public static void verificarSubCuadrado(int posX, int poxY){
+
 	}
 
 	public static void cuadradoVerificar(int posX, int posY){
