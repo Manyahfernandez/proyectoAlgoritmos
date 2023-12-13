@@ -23,12 +23,13 @@ public class LineasRectangulosColores{
 	*/
 
 	public final int CUADRADO = 0, ESFERAB = 1, ESFERAC = 2, ESFERAG = 3, ESFERAR = 4, ESFERAY = 5, ESFERAO = 6, VACIO = 7;
-	public static final Colores[] COLORESSELECCIONADOS = {Colores.MAGENTA, Colores.BLUE, Colores.CYAN, Colores.GREEN, Colores.RED, Colores.YELLOW, Colores.ORANGE};
+	public static final Colores[] COLORESSELECCIONADOS = {Colores.MAGENTA, Colores.BLUE, Colores.CYAN, Colores.GREEN, Colores.RED, Colores.YELLOW, Colores.WHITE};
 	public static int puntaje;
 	public static MaquinaDeTrazados mt;
 	public static int[][] movimientos = {{0,0},{-1,0},{1,0},{0,1},{0,-1},{1,1},{1,-1},{-1,1},{-1,-1}};
 	public static int[] proximosObjetos = {7,7,7};
 	public static int[] cantidadDeElementos = {0,0,0,0,0,0,0};
+	public static boolean seElimino = false;
 	public static int[] jugada;
 	public static int[][] tablero = {{7, 7, 7, 7, 7, 7, 7, 7, 7},
 									{7, 7, 7, 7, 7, 7, 7, 7, 7},
@@ -216,7 +217,9 @@ public class LineasRectangulosColores{
 	//@ ensures \result == (\exists int i; 0 <= i && i < 9; esValido(posX + movimientos[i][0], posY + movimientos[i][1]));
 	public static /*@ pure @*/ boolean caminoPosicion(int posX, int posY){
 		int dir = 0;
-
+		//@ maintaining 0 <= dir <= 8;
+		//@ maintaining  (\forall int j; 0 <= j && j < dir; !esValido(posX + movimientos[dir][0], posY + movimientos[dir][1]));
+		//decreases 8 - dir;
 		while(dir < 8){
 			dir = dir + 1;
 
@@ -245,13 +248,27 @@ public class LineasRectangulosColores{
  			//@ assert 0 <= jugada[1] < 9;
  			//@ assert 0 <= jugada[2] < 9;
  			//@ assert 0 <= jugada[3] < 9;
-			if(tablero[jugada[2]][jugada[3]] == 7 && tablero[jugada[0]][jugada[1]] != 7 && caminoPosicion(jugada[0], jugada[1])){
-				tablero[jugada[2]][jugada[3]] = tablero[jugada[0]][jugada[1]];
-				tablero[jugada[0]][jugada[1]] = 7; 
-				valida = true;
-			}
+			if(jugada[0] >= 0 && jugada[0] < 9 && jugada[1] >= 0 && jugada[1] < 9 && jugada[2] >= 0 && jugada[2] < 9 && jugada[3] >= 0 && jugada[3] < 9){	
+				if(tablero[jugada[0]][jugada[1]] != 7){
+					if(tablero[jugada[2]][jugada[3]] == 7){
+						if(caminoPosicion(jugada[0], jugada[1])){
+							tablero[jugada[2]][jugada[3]] = tablero[jugada[0]][jugada[1]];
+							tablero[jugada[0]][jugada[1]] = 7; 
+							valida = true;
+							System.out.println("ELemento movido a la casilla: " + jugada[2] + " " + jugada[3]);
+						}else{
+						System.out.println("Elemento seleccionado no puede ser movido");	
+						}
+					}else{
+						System.out.println("Casilla " + jugada[2] + " " + jugada[3] + " no se encuentra vacia");
+					}
+				}
+				else{
+					System.out.println("La casilla " + jugada[0] + " " + jugada[1] + " se encuentra vacia");
+				}
+			}	
 			else{
-				System.out.println("Movimiento invalido");
+				System.out.println("Movimiento invalido, posicion se sale del tablero de juego");
 			}
 		}while(!valida);
 	}
@@ -327,6 +344,7 @@ public class LineasRectangulosColores{
 		mt.dibujarLinea(9*longitud/8,longitudPedazo,9*longitud/8 + longitudPedazo,longitudPedazo);
 		mt.dibujarLinea(9*longitud/8, 2*longitudPedazo,9*longitud/8 + longitudPedazo, 2*longitudPedazo);
 		mt.configurarFuente("SansSerif", Font.BOLD, 20);
+		mt.dibujarRectanguloLleno(0, longitud + longitudPedazo, longitud, 48, Colores.WHITE);
 		mt.dibujarString("Puntaje:" + puntaje,0, longitud + 20 + longitudPedazo, Colores.BLACK);
 		mt.repintar();
 	}
@@ -338,7 +356,7 @@ public class LineasRectangulosColores{
 	*/
 	//@ requires true;
 	//@ ensures \result == (\forall int i; 0 <= i && i < 9; \forall int j;  0 <= j && j < 9; tablero[i][j] != 7);
-	public static boolean determinarFinaldeJuego(){
+	public static /*@ pure @*/boolean determinarFinaldeJuego(){
 		int i = 0, j = 0;
 
 		//@ maintaining 0 <= i <= 9;
@@ -361,26 +379,213 @@ public class LineasRectangulosColores{
 		return true;
 	}
 
-	public static void main(String[] args) {
-		LineasRectangulosColores.inicializarJuego();
-		LineasRectangulosColores.inicializarTablero();
+	public static void sumarPuntaje(int cantidad){
+		if(cantidad == 4){
+			puntaje += 5;
+		}
+		if(cantidad == 5){
+			puntaje += 10;
+		}
+		if(cantidad == 6){
+			puntaje +=12;
+		}
+		if(cantidad == 7){
+			puntaje +=18;
+		}
+		if(cantidad >= 8){
+			puntaje += 40;
+		}
+	}
+
+	public static void matrizProcesados(int objeto){
 		int i = 0, j = 0;
 		while(i < 9){
 			while(j < 9){
-				System.out.print(LineasRectangulosColores.tablero[i][j] + " ");
+				if(tablero[i][j] == -1){
+					tablero[i][j] = objeto;
+				}
 				j++;
 			}
-			System.out.println();
 			j = 0;
 			i++;
 		}
+	}
+
+	public static void validarCantidad(int cantidad, int objeto){
+		int i = 0, j = 0;
+		if(cantidad >= 5 || (cantidad == 4 && objeto == 0)){
+			matrizProcesados(7);
+			sumarPuntaje(cantidad);
+			cantidadDeElementos[objeto] -= cantidad;
+			seElimino = true;
+
+		}else{
+			matrizProcesados(objeto);
+		}
+	}
+
+	public static /*@ pure @*/ boolean validarSiquienteObjeto(int posX, int posY, int objeto){
+		if(posX >= 0 && posX < 9 && posY >= 0 && posY < 9 && tablero[posX][posY] == objeto){
+			return true;
+		}else{
+			return false;
+		}
+	}
+
+	public static void validarLineaDerecha(int posX, int posY){
+		int cantidad  = 1, posicionY= posY;
+		posicionY = posY + 1;
+
+		while(validarSiquienteObjeto(posX, posicionY, tablero[posX][posY])){
+			cantidad++;
+			tablero[posX][posicionY] = -1;
+			posicionY ++;
+		}
+		validarCantidad(cantidad, tablero[posX][posY]);
+	}
+
+	public static void validarLineaAbajo(int posX, int posY){
+		int cantidad  = 1, posicionX= posX;
+		posicionX = posX + 1;
+
+		while(validarSiquienteObjeto(posicionX, posY, tablero[posX][posY])){
+			cantidad++;
+			tablero[posicionX][posY] = -1;
+			posicionX ++;
+		}
+		validarCantidad(cantidad, tablero[posX][posY]);
+	}
+
+	public static void validarLineaDiagonal(int posX, int posY){
+		int cantidad  = 1, posicionX = posX, posicionY = posY;
+		posicionX = posX + 1;
+		posicionY = posY + 1;
+
+		while(validarSiquienteObjeto(posicionX, posicionY, tablero[posX][posY])){
+			cantidad++;
+			tablero[posicionX][posicionY] = -1;
+			posicionX ++;
+			posicionY ++;
+		}
+		validarCantidad(cantidad, tablero[posX][posY]);
+	}
+
+	public static void validarLineaDiagonalContraria(int posX, int posY){
+		int cantidad  = 1, posicionX = posX, posicionY = posY;
+		posicionX = posX - 1;
+		posicionY = posY + 1;
+
+		while(validarSiquienteObjeto(posicionX, posicionY, tablero[posX][posY])){
+			cantidad++;
+			tablero[posicionX][posicionY] = -1;
+			posicionX--;
+			posicionY++;
+		}
+		validarCantidad(cantidad, tablero[posX][posY]);
+	}
+
+	public static int validarCuadrado(int posX, int posY){
+		int posicionY = posY, i = posX, j = posY, cantidad = 1, cantidadRetornada = 0;
+
+		posicionY = posY + 1;
+
+		while(validarSiquienteObjeto(posX, posicionY, tablero[posX][posY])){
+			cantidad++;
+			posicionY++;
+		}
+
+		if(cantidad == 1){
+			return -1;
+		}
+
+		while(i < posX + cantidad){
+			while(j <  posY + cantidad){
+				if(validarSiquienteObjeto(i,j,0)){
+					tablero[i][j] = -1;
+					cantidadRetornada++;
+				}else{
+					return -1;
+				}
+				j++;
+			}
+			j = posY;
+			i++;
+		}
+
+		return cantidadRetornada;
+	}
+
+	public static void cuadradoVerificar(int posX, int posY){
+		int cantidad = validarCuadrado(posX, posY);
+		if(cantidad != -1){
+			validarCantidad(cantidad,0);
+			System.out.println("Elimine algo");
+			System.out.println(cantidad);
+			seElimino = true;
+		}else{
+			matrizProcesados(0);
+		}
+	}
+
+
+	public static boolean procesarObjetosDelTablero(){
+		int i = 0, j = 0;
+
+		while(i < 9){
+			while(j < 9){
+				if(tablero[i][j] != 7){
+					if(tablero[i][j] != 0){
+						validarLineaDerecha(i,j);
+						validarLineaAbajo(i,j);
+						validarLineaDiagonal(i,j);
+						validarLineaDiagonalContraria(i,j);
+						if(seElimino){
+							System.out.println("Se elimino una linea. Nuevo Puntaje: " + puntaje);
+							System.out.println("Ganaste una nueva movida");
+							tablero[i][j] = 7;
+							seElimino = false;
+							return true;
+						}
+					}else{
+						cuadradoVerificar(i,j);
+						if(seElimino){
+							System.out.println("Se elimino un cuadrado. Nuevo Puntaje: " + puntaje);
+							System.out.println("Ganaste una nueva movida");
+							seElimino = false;
+							return true;
+						}
+					}
+				}
+				j++;
+			}
+			j = 0;
+			i++;
+		}
+
+		return false;
+	}
+
+	public static void main(String[] args) {
+		int i = 0;
+
+		System.out.println("\t Lineas de Rectangulos y Colores: ");
+		LineasRectangulosColores.inicializarJuego();
+		LineasRectangulosColores.inicializarTablero();
 		LineasRectangulosColores.obtenerProximosObjetos();
 		LineasRectangulosColores.mostrarEstadoDelJuego();
 
 		while(!LineasRectangulosColores.determinarFinaldeJuego()){
 			LineasRectangulosColores.obtenerJugadasValida();
-			LineasRectangulosColores.agregarProximosObjetos();
-			LineasRectangulosColores.obtenerProximosObjetos();
+			LineasRectangulosColores.actualizarEstadoDelJuego();
+			if(!LineasRectangulosColores.procesarObjetosDelTablero()){
+				LineasRectangulosColores.agregarProximosObjetos();
+				LineasRectangulosColores.obtenerProximosObjetos();
+				while(i < 7){
+				System.out.println(cantidadDeElementos[i]);
+				i++;
+			}
+			i = 0;
+			}
 			LineasRectangulosColores.actualizarEstadoDelJuego();
 		}
 	}
